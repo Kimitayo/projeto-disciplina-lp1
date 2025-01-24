@@ -133,7 +133,7 @@ private:
     unordered_map<string, Usuario> usuarios;
 
 public:
-    void registrarUsuario(Usuario *usuario) {
+    void registrarUsuario(Usuario* usuario) {
         string nome, email, senha1, senha2;
         int idade = 22;
         bool ret;   
@@ -218,40 +218,78 @@ public:
     }
 };
 
-// Primeiro menu -> para criar conta ou logar
-void menu1() {
-    cout << "=== Fitflow ===\n";
-    cout << "1. Criar uma conta\n";
-    cout << "2. Login\n";
-    cout << "3. Sair\n";
-
-    cout << "=> ";
-}
-
 // Menu depois que é logado
-void menu2(string nome) {
-    cout << "\n--- Bem-vindo ao Fitflow, " << nome << "! ---\n";
-    cout << "O que voce gostaria de fazer hoje?\n\n";
-    cout << "1. Registrar dados\n";
-    cout << "2. Exibir dados do usuario\n";
-    cout << "3. Exibir dados de saude\n";
-    cout << "4. Sair\n";
-    cout << "=> ";
+void menuLogado(Usuario* usuario) {
+    int opcao = 0;
+    while (opcao != 4) {
+        int freqCardiaca, passos;
+        float altura, peso;
+
+        cout << "\n--- Bem-vindo ao Fitflow, " << usuario->getNome() << "! ---\n";
+        cout << "O que voce gostaria de fazer hoje?\n\n";
+        cout << "1. Registrar dados\n";
+        cout << "2. Exibir dados do usuario\n";
+        cout << "3. Exibir dados de saude\n";
+        cout << "4. Sair\n";
+        cout << "=> ";
+        cin >> opcao;
+        cin.ignore();
+
+        switch (opcao) {
+        case 1: //chamar método que registre os dados de saúde
+            cout << "Digite seu peso (em kg): ";
+            cin >> peso;
+            usuario->setPeso(peso);
+            cout << "Peso atualizado para " << usuario->getPeso() << " kg." << endl;
+
+            cout << "Digite sua altura (em m): ";
+            cin >> altura;
+            usuario->setAltura(altura);
+            cout << "Altura atualizada para " << usuario->getAltura() << " metros." << endl;
+
+            cout << "Digite o numero de passos dados: ";
+            cin >> passos;
+            usuario->setPassos(passos);
+            cout << "Passos registrados. Total: " << usuario->getPassos() << " passos." << endl;
+
+            cout << "Digite sua frequencia cardiaca (em bpm): ";
+            cin >> freqCardiaca;
+            usuario->setFreqCardiaca(freqCardiaca);
+            cout << "Frequencia cardiaca atualizada para " << usuario->getFreqCardiaca() << " bpm." << endl;
+
+            usuario->setCaloriasQueimadas();
+
+            cout << "Dados atualizados com sucesso!" << endl;
+            break;
+        case 2: //chamar método que exiba os dados do usuario
+            usuario->exibirDadosDoUsuario();
+            break;
+        case 3: //chamar método que exiba os dados de saude
+            usuario->exibirDadosDeSaude();
+            break;
+        case 4:
+            cout << "Ate a proxima " << usuario->getNome() << "! Obrigado por usar o programa!\n\n";
+            break;
+        default:
+            cout << "Opcao invalida. Tente novamente." << endl;
+        }
+    }
 }
 
 int main() {
     Usuario usuario;
     Sistema sistema;
     string nome, email, senha;
-    int opcao1, opcao2 = 0;
-    float altura, peso;
-    int freqCardiaca, passos;
-
+    int opcao1;
     bool menuAberto = true;
 
-    // menu1
+    // Menu Principal
     do {
-        menu1();
+        cout << "=== Fitflow ===\n";
+        cout << "1. Criar uma conta\n";
+        cout << "2. Login\n";
+        cout << "3. Sair\n";
+        cout << "=> ";
         cin >> opcao1;
         cin.ignore(); 
 
@@ -260,18 +298,14 @@ int main() {
             sistema.registrarUsuario(&usuario);
             break;
         case 2: 
-            email = "gmail@.com";
-            senha = "123456789";
             if (!sistema.logarUsuario(email, senha)) {
                 break;
             }
-            nome = usuario.getNome();
-            menuAberto = false;
+            menuLogado(&usuario);
             break;
         case 3: 
-            cout << "Ate a proxima! Obrigado por usar o programa!" << endl;
+            cout << "Encerrando Fitflow... Obrigado por usar o programa!" << endl;
             menuAberto = false;
-            opcao2 = 4;
             break;
 
         default:
@@ -279,53 +313,5 @@ int main() {
         }
     } while (menuAberto);
 
-    
-    // menu2
-    while (opcao2 != 4) {
-        menu2(nome);
-        cin >> opcao2;
-        cin.ignore();
-
-        switch (opcao2) {
-        case 1: //chamar método que registre os dados de saúde
-            cout << "Digite seu peso (em kg): ";
-            cin >> peso;
-            usuario.setPeso(peso);
-            cout << "Peso atualizado para " << peso << " kg." << endl;
-
-            cout << "Digite sua altura (em m): ";
-            cin >> altura;
-            usuario.setAltura(altura);
-            cout << "Altura atualizada para " << altura << " metros." << endl;
-
-            cout << "Digite o numero de passos dados: ";
-            cin >> passos;
-            usuario.setPassos(passos);
-            cout << "Passos registrados. Total: " << usuario.getPassos() << " passos." << endl;
-
-            cout << "Digite sua frequencia cardiaca (em bpm): ";
-            cin >> freqCardiaca;
-            usuario.setFreqCardiaca(freqCardiaca);
-            cout << "Frequencia cardiaca atualizada para " << usuario.getFreqCardiaca() << " bpm." << endl;
-
-            usuario.setCaloriasQueimadas();
-
-            cout << "Dados atualizados com sucesso!" << endl;
-            break;
-        case 2: //chamar método que exiba os dados do usuario
-            usuario.exibirDadosDoUsuario();
-            break;
-        case 3: //chamar método que exiba os dados de saude
-            usuario.exibirDadosDeSaude();
-            break;
-        case 4:
-            cout << "Ate a proxima " << nome << "! Obrigado por usar o programa!";
-            break;
-        default:
-            cout << "Opcao invalida. Tente novamente." << endl;
-        }
-    }
-
     return 0;
-
 }
