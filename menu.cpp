@@ -3,7 +3,7 @@
 using namespace std;
 
 class Usuario {
-private: 
+private:
     string nome;
     int idade;
     float altura;
@@ -15,105 +15,140 @@ private:
     float caloriasQueimadas;
 
 public:
-    Usuario() : idade(0), altura(0.0), peso(0.0), freqCardiaca(0), passos(0), caloriasQueimadas(0.0){};
+    Usuario() : idade(0), altura(0.0), peso(0.0), freqCardiaca(0), passos(0), caloriasQueimadas(0.0) {};
+
+    // Setters e Getters (Encapsulamento)
+    void setNome(const string& novoNome) { this->nome = novoNome; }
+
+    string getNome() const { return this->nome; }
+
+    void setIdade(int novaIdade) {
+        if (novaIdade < 0) {
+            cout << "Idade invalida. Tente novamente." << endl;
+            return;
+        }
+        this->idade = novaIdade;
+    }
+
+    int getIdade() const { return this->idade; }
+
+    void setAltura(float novaAltura) {
+        if (novaAltura < 100 || novaAltura > 250) {
+            cout << "Altura invalida. Tente novamente." << endl;
+            return;
+        }
+        this->altura = novaAltura;
+    }
+
+    float getAltura() const { return this->altura; }
+
+    void setPeso(float novoPeso) {
+        if (novoPeso < 0) {
+            cout << "Peso invalido. Tente novamente." << endl;
+            return;
+        }
+        this->peso = novoPeso;
+    }
+
+    float getPeso() const { return this->peso; }
+
+    void setFreqCardiaca(int novaFreqCardiaca) {
+        if (novaFreqCardiaca <= 0) {
+            cout << "Frequencia cardiaca invalida. Tente novamente." << endl;
+            return;
+        }
+        this->freqCardiaca = novaFreqCardiaca;
+    }
+
+    int getFreqCardiaca() const { return this->freqCardiaca; }
+
+    void setPassos(int novosPassos) {
+        if (novosPassos <= 0) {
+            cout << "Numero de passos invalido. Tente novamente." << endl;
+            return;
+        }
+        this->passos = novosPassos;
+    }
+
+    int getPassos() const { return this->passos; }
+
+    void setCaloriasQueimadas() {
+        const double caloriasPorPasso = 0.05;
+        this->caloriasQueimadas = passos * caloriasPorPasso;
+    }
+
+    float getCaloriasQueimadas() const { return this->caloriasQueimadas; }
+
+    void setEmail(const string& novoEmail) {
+        if (novoEmail.find("@") == string::npos ||
+            novoEmail.find(".") == string::npos ||
+            novoEmail.find(" ") != string::npos ||
+            novoEmail.length() < 5) {
+            cout << "Email invalido. Tente novamente." << endl;
+            return;
+        }
+        this->email = novoEmail;
+    }
+
+    string getEmail() const { return this->email; }
+
+    void setSenha(const string& novaSenha) {
+        if (novaSenha.length() < 8) {
+            cout << "Senha invalida. Tente novamente." << endl;
+            return;
+        }
+        this->senha = novaSenha;
+    }
+
+    string getSenha() const { return this->senha; }
 
     // Método de validar login
     bool validarLogin(string email, string senha) {
-        return this->email == email && this->senha == senha;
-    }
-
-    // Juntei aqui os métodos criados por Bernardo
-    void registrarPeso (float novoPeso) {
-        cout << "Digite seu peso (em kg): ";
-        cin >> novoPeso;
-        if (novoPeso>0) {
-            peso = novoPeso;
-            this->peso = peso;
-            cout << "Peso atualizado para " << peso << " kg." << endl;
-        } else {
-            cout << "Peso invalido." << endl;
-        }
-    }
-
-    void registrarAltura(float novaAltura) {
-        cout << "Digite sua altura (em m): ";
-        cin >> novaAltura;
-        if (novaAltura > 0) {
-            altura = novaAltura;
-            this->altura = altura;
-            cout << "Altura atualizada para " << altura << " metros." << endl;
-        } else {
-            cout << "Altura invalida." << endl;
-        }
-    }
-
-    void registrarPassos(int novosPassos) {
-        cout << "Digite o numero de passos dados: ";
-        cin >> novosPassos;
-        if (novosPassos >= 0) {
-            passos += novosPassos;
-            this->passos = passos;
-            cout << "Passos registrados. Total: " << passos << " passos." << endl;
-        } else {
-            cout << "Numero de passos invalido." << endl;
-        }
-    }
-
-    void atualizarFrequenciaCardiaca(int novaFrequencia) {
-        cout << "Digite sua frequencia cardiaca (em bpm): ";
-        cin >> novaFrequencia;
-        if (novaFrequencia > 0) {
-            freqCardiaca = novaFrequencia;
-            this->freqCardiaca = freqCardiaca;
-            cout << "Frequencia cardiaca atualizada para " << freqCardiaca << " bpm." << endl;
-        } else {
-            cout << "Frequencia cardiaca invalida." << endl;
-        }
-    }
-
-    double calcularCalorias() const {
-        const double caloriasPorPasso = 0.05;
-        return passos * caloriasPorPasso;
+        return email == this->email && senha == this->senha;
     }
 
 
     // Métodos pra exbibir dados
     void exibirDadosDoUsuario() {
         cout << "--- Perfil do Usuario ---\n";
-        cout << "Nome: " << nome << "\n";
-        cout << "Idade: " << idade << " anos\n";
-        cout << "Peso: " << peso << " kg\n";
-        cout << "Altura: " << altura << " metros\n";
+        cout << "Nome: " << this->getNome() << "\n";
+        cout << "Idade: " << this->getIdade() << " anos\n";
+        cout << "Peso: " << this->getPeso() << " kg\n";
+        cout << "Altura: " << this->getAltura() << " metros\n";
     }
 
     void exibirDadosDeSaude() const {
         cout << "--- Dados de Saude ---\n";
-        cout << "Passos: " << passos << "\n";
-        cout << "Frequencia Cardiaca: " << freqCardiaca << " bpm\n";
-        cout << "Calorias Queimadas: " << calcularCalorias() << " kcal\n";
+        cout << "Passos: " << this->getPassos() << "\n";
+        cout << "Frequencia Cardiaca: " << this->getFreqCardiaca() << " bpm\n";
+        cout << "Calorias Queimadas: " << this->getCaloriasQueimadas() << " kcal\n";
     }
 
 
     // 1. Criar uma conta
-    void registrarUsuario(string nome, int idade, string email, string senha) {
+    void registrarUsuario(Usuario usuario) {
+        string nomeTmp, emailTmp, senhaTmp;
+        int idadeTmp;
+
         cout << "\n--- Registro de Usuario ---" << endl;
         cout << "Digite seu nome: ";
         getline(cin, nome); //usei getline aqui pra poder aceitar quebra de linha
+        usuario.setNome(nomeTmp);
+
         cout << "Digite sua idade: ";
-        cin >> idade;
+        cin >> idadeTmp;
         cin.ignore();
+        usuario.setIdade(idadeTmp);
 
         cout << "Digite seu email: ";
-        getline(cin, email);
+        getline(cin, emailTmp);
+        usuario.setEmail(emailTmp);
+
         cout << "Digite sua senha: ";
-        getline(cin, senha);
+        getline(cin, senhaTmp);
+        usuario.setSenha(senhaTmp);
 
-        this->nome = nome;
-        this->idade = idade;
-        this->email = email;
-        this->senha = senha;
         cout << "Usuario registrado com sucesso!" << endl;
-
     }
 
     // 2. Login
@@ -182,7 +217,7 @@ int main() {
 
         switch (opcao1) {
         case 1:
-            usuario.registrarUsuario(nome, idade, email, senha); 
+            usuario.registrarUsuario(usuario);
             break;
         case 2: 
             usuario.login(emailLogin, senhaLogin);
@@ -204,15 +239,31 @@ int main() {
     do {
         menu2(nome);
         cin >> opcao2;
-        cin.ignore(); 
+        cin.ignore();
 
         switch (opcao2) {
         case 1: //chamar método que registre os dados de saúde
-            usuario.registrarPeso(peso);
-            usuario.registrarAltura(altura);
-            usuario.registrarPassos(passos);
-            usuario.atualizarFrequenciaCardiaca(freqCardiaca);
-            usuario.calcularCalorias();
+            cout << "Digite seu peso (em kg): ";
+            cin >> peso;
+            usuario.setPeso(peso);
+            cout << "Peso atualizado para " << peso << " kg." << endl;
+
+            cout << "Digite sua altura (em m): ";
+            cin >> altura;
+            usuario.setAltura(altura);
+            cout << "Altura atualizada para " << altura << " metros." << endl;
+
+            cout << "Digite o numero de passos dados: ";
+            cin >> passos;
+            usuario.setPassos(passos);
+            cout << "Passos registrados. Total: " << usuario.getPassos() << " passos." << endl;
+
+            cout << "Digite sua frequencia cardiaca (em bpm): ";
+            cin >> freqCardiaca;
+            usuario.setFreqCardiaca(freqCardiaca);
+            cout << "Frequencia cardiaca atualizada para " << usuario.getFreqCardiaca() << " bpm." << endl;
+
+            usuario.setCaloriasQueimadas();
 
             cout << "Dados atualizados com sucesso!" << endl;
             break;
