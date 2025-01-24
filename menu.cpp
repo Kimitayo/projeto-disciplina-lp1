@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <unordered_map>
 using namespace std;
 
 class Usuario {
@@ -22,18 +23,19 @@ public:
 
     string getNome() const { return this->nome; }
 
-    void setIdade(int novaIdade) {
-        if (novaIdade < 0) {
+    bool setIdade(int novaIdade) {
+        if (novaIdade <= 0) {
             cout << "Idade invalida. Tente novamente." << endl;
-            return;
+            return false;
         }
         this->idade = novaIdade;
+        return true;
     }
 
     int getIdade() const { return this->idade; }
 
     void setAltura(float novaAltura) {
-        if (novaAltura < 100 || novaAltura > 250) {
+        if (novaAltura < 1.00 || novaAltura > 2.50) {
             cout << "Altura invalida. Tente novamente." << endl;
             return;
         }
@@ -79,34 +81,35 @@ public:
 
     float getCaloriasQueimadas() const { return this->caloriasQueimadas; }
 
-    void setEmail(const string& novoEmail) {
+    bool setEmail(const string& novoEmail) {
         if (novoEmail.find("@") == string::npos ||
             novoEmail.find(".") == string::npos ||
             novoEmail.find(" ") != string::npos ||
             novoEmail.length() < 5) {
             cout << "Email invalido. Tente novamente." << endl;
-            return;
+            return false;
         }
         this->email = novoEmail;
+        return true;
     }
 
     string getEmail() const { return this->email; }
 
-    void setSenha(const string& novaSenha) {
-        if (novaSenha.length() < 8) {
-            cout << "Senha invalida. Tente novamente." << endl;
-            return;
+    bool setSenha(const string& senha1, const string& senha2) { 
+        if (senha1 != senha2) {
+            cout << "Senhas nao conferem. Tente novamente." << endl;
+            return false;
         }
-        this->senha = novaSenha;
+        if (senha1.length() < 8) {
+            cout << "Senha muito curta. A senha deve conter no minimo 8 caracteres." << endl;
+            return false;
+        }
+
+        this->senha = senha1;
+        return true;
     }
 
     string getSenha() const { return this->senha; }
-
-    // Método de validar login
-    bool validarLogin(string email, string senha) {
-        return email == this->email && senha == this->senha;
-    }
-
 
     // Métodos pra exbibir dados
     void exibirDadosDoUsuario() {
@@ -123,57 +126,97 @@ public:
         cout << "Frequencia Cardiaca: " << this->getFreqCardiaca() << " bpm\n";
         cout << "Calorias Queimadas: " << this->getCaloriasQueimadas() << " kcal\n";
     }
+};
 
+class Sistema {
+private:
+    unordered_map<string, Usuario> usuarios;
 
-    // 1. Criar uma conta
-    void registrarUsuario(Usuario usuario) {
-        string nomeTmp, emailTmp, senhaTmp;
-        int idadeTmp;
+public:
+    void registrarUsuario(Usuario *usuario) {
+        string nome, email, senha1, senha2;
+        int idade = 22;
+        bool ret;   
 
         cout << "\n--- Registro de Usuario ---" << endl;
         cout << "Digite seu nome: ";
         getline(cin, nome); //usei getline aqui pra poder aceitar quebra de linha
-        usuario.setNome(nomeTmp);
+        usuario->setNome(nome);
 
         cout << "Digite sua idade: ";
-        cin >> idadeTmp;
+        cin >> idade;
         cin.ignore();
-        usuario.setIdade(idadeTmp);
+        ret = usuario->setIdade(idade);
+        if (!ret) {
+            return;
+        }
 
         cout << "Digite seu email: ";
-        getline(cin, emailTmp);
-        usuario.setEmail(emailTmp);
+        getline(cin, email);
+        ret = usuario->setEmail(email);
+        if (!ret) {
+            return;
+        }   
 
         cout << "Digite sua senha: ";
-        getline(cin, senhaTmp);
-        usuario.setSenha(senhaTmp);
+        getline(cin, senha1);
 
+        cout << "Digite sua senha novamente: ";
+        getline(cin, senha2);
+        ret = usuario->setSenha(senha1, senha2);
+        if (!ret) {
+            return;
+        }
+
+        if (usuarios.count(email) > 0) {
+            cout << "Email ja cadastrado. Tente novamente." << endl;
+            return;
+        }
+        usuarios.emplace(email, *usuario);
         cout << "Usuario registrado com sucesso!" << endl;
     }
 
     // 2. Login
-    void login(string emailLogin, string senhaLogin) {
+    bool logarUsuario(string email, string senha) {
         cout << "\n--- Login ---" << endl;
-        bool loginValido = false;
-        while (!loginValido) {
+        cout << "Digite 0 para voltar ao menu anterior." << endl;
+        bool emailValido = false;
+        bool senhaValida = false;
+
+        do {
             cout << "Digite seu email: ";
-            getline(cin, emailLogin);
-            cout << "Digite sua senha: ";
-            getline(cin, senhaLogin);
+            getline(cin, email);
 
-            if (validarLogin(emailLogin, senhaLogin)) {
-                cout << "Login realizado com sucesso!" << endl;
-                loginValido = true;
-            } else {
-                cout << "Email ou senha incorretos. Tente novamente." << endl;
+            if (email == "0") {
+                return false;
             }
-        }
+
+            if (usuarios.count(email) == 0) {
+                cout << "Email nao cadastrado. Tente novamente." << endl;
+            } else {
+                emailValido = true;
+            }
+        } while (!emailValido && email != "0");
+        
+        do {
+            cout << "Digite sua senha: ";
+            getline(cin, senha);
+
+            if (senha == "0") {
+                return false;
+            }   
+
+            if (usuarios[email].getSenha() != senha) {
+                cout << "Senha incorreta. Tente novamente." << endl;
+            } else {
+                senhaValida = true;
+            }
+        } while (!senhaValida && senha != "0");
+
+        cout << "Login efetuado com sucesso!" << endl;
+        return true;
     }
-
 };
-
-
-
 
 // Primeiro menu -> para criar conta ou logar
 void menu1() {
@@ -187,7 +230,8 @@ void menu1() {
 
 // Menu depois que é logado
 void menu2(string nome) {
-    cout << "\n--- Bem-vindo," << nome << "ao Fitflow! ---\nO que voce gostaria de fazer hoje? \n";
+    cout << "\n--- Bem-vindo ao Fitflow, " << nome << "! ---\n";
+    cout << "O que voce gostaria de fazer hoje?\n\n";
     cout << "1. Registrar dados\n";
     cout << "2. Exibir dados do usuario\n";
     cout << "3. Exibir dados de saude\n";
@@ -195,19 +239,15 @@ void menu2(string nome) {
     cout << "=> ";
 }
 
-
-
-
-
 int main() {
     Usuario usuario;
-    string nome, email, senha, emailLogin, senhaLogin;
-    int idade, opcao1, opcao2;
-    float altura, peso, caloriasQueimadas;
+    Sistema sistema;
+    string nome, email, senha;
+    int opcao1, opcao2 = 0;
+    float altura, peso;
     int freqCardiaca, passos;
 
-    bool menu11 = true;
-    bool menu22 = false;
+    bool menuAberto = true;
 
     // menu1
     do {
@@ -217,26 +257,31 @@ int main() {
 
         switch (opcao1) {
         case 1:
-            usuario.registrarUsuario(usuario);
+            sistema.registrarUsuario(&usuario);
             break;
         case 2: 
-            usuario.login(emailLogin, senhaLogin);
-            nome = emailLogin;
-            menu22 = true;
-            menu11 = false;
+            email = "gmail@.com";
+            senha = "123456789";
+            if (!sistema.logarUsuario(email, senha)) {
+                break;
+            }
+            nome = usuario.getNome();
+            menuAberto = false;
             break;
         case 3: 
             cout << "Ate a proxima! Obrigado por usar o programa!" << endl;
+            menuAberto = false;
+            opcao2 = 4;
             break;
 
         default:
             cout << "Opcao invalida. Tente novamente." << endl;
         }
-    } while (opcao1 != 3 && menu11==true);
+    } while (menuAberto);
 
     
     // menu2
-    do {
+    while (opcao2 != 4) {
         menu2(nome);
         cin >> opcao2;
         cin.ignore();
@@ -274,12 +319,12 @@ int main() {
             usuario.exibirDadosDeSaude();
             break;
         case 4:
-            cout << "Ate a proxima" << nome << "! Obrigado por usar o programa!";
+            cout << "Ate a proxima " << nome << "! Obrigado por usar o programa!";
             break;
         default:
             cout << "Opcao invalida. Tente novamente." << endl;
         }
-    } while (opcao2 != 4);
+    }
 
     return 0;
 
