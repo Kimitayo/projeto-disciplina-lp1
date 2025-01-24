@@ -75,7 +75,7 @@ public:
     int getPassos() const { return this->passos; }
 
     void setCaloriasQueimadas() {
-        const double caloriasPorPasso = 0.05;
+        const float caloriasPorPasso = 0.05f;
         this->caloriasQueimadas = passos * caloriasPorPasso;
     }
 
