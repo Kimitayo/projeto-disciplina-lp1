@@ -1,9 +1,10 @@
 #include <iostream>
 #include <string>
+#include <unordered_map>
 using namespace std;
 
 class Usuario {
-private: 
+private:
     string nome;
     int idade;
     float altura;
@@ -15,221 +16,302 @@ private:
     float caloriasQueimadas;
 
 public:
-    Usuario() : idade(0), altura(0.0), peso(0.0), freqCardiaca(0), passos(0), caloriasQueimadas(0.0){};
+    Usuario() : idade(0), altura(0.0), peso(0.0), freqCardiaca(0), passos(0), caloriasQueimadas(0.0) {};
 
-    // Método de validar login
-    bool validarLogin(string email, string senha) {
-        return this->email == email && this->senha == senha;
-    }
+    // Setters e Getters (Encapsulamento)
+    void setNome(const string& novoNome) { this->nome = novoNome; }
 
-    // Juntei aqui os métodos criados por Bernardo
-    void registrarPeso (float novoPeso) {
-        cout << "Digite seu peso (em kg): ";
-        cin >> novoPeso;
-        if (novoPeso>0) {
-            peso = novoPeso;
-            this->peso = peso;
-            cout << "Peso atualizado para " << peso << " kg." << endl;
-        } else {
-            cout << "Peso invalido." << endl;
+    string getNome() const { return this->nome; }
+
+    bool setIdade(int novaIdade) {
+        if (novaIdade <= 0) {
+            cout << "Idade invalida. Tente novamente." << endl;
+            return false;
         }
+        this->idade = novaIdade;
+        return true;
     }
 
-    void registrarAltura(float novaAltura) {
-        cout << "Digite sua altura (em m): ";
-        cin >> novaAltura;
-        if (novaAltura > 0) {
-            altura = novaAltura;
-            this->altura = altura;
-            cout << "Altura atualizada para " << altura << " metros." << endl;
-        } else {
-            cout << "Altura invalida." << endl;
+    int getIdade() const { return this->idade; }
+
+    void setAltura(float novaAltura) {
+        if (novaAltura < 1.00 || novaAltura > 2.50) {
+            cout << "Altura invalida. Tente novamente." << endl;
+            return;
         }
+        this->altura = novaAltura;
     }
 
-    void registrarPassos(int novosPassos) {
-        cout << "Digite o numero de passos dados: ";
-        cin >> novosPassos;
-        if (novosPassos >= 0) {
-            passos += novosPassos;
-            this->passos = passos;
-            cout << "Passos registrados. Total: " << passos << " passos." << endl;
-        } else {
-            cout << "Numero de passos invalido." << endl;
+    float getAltura() const { return this->altura; }
+
+    void setPeso(float novoPeso) {
+        if (novoPeso < 0) {
+            cout << "Peso invalido. Tente novamente." << endl;
+            return;
         }
+        this->peso = novoPeso;
     }
 
-    void atualizarFrequenciaCardiaca(int novaFrequencia) {
-        cout << "Digite sua frequencia cardiaca (em bpm): ";
-        cin >> novaFrequencia;
-        if (novaFrequencia > 0) {
-            freqCardiaca = novaFrequencia;
-            this->freqCardiaca = freqCardiaca;
-            cout << "Frequencia cardiaca atualizada para " << freqCardiaca << " bpm." << endl;
-        } else {
-            cout << "Frequencia cardiaca invalida." << endl;
+    float getPeso() const { return this->peso; }
+
+    void setFreqCardiaca(int novaFreqCardiaca) {
+        if (novaFreqCardiaca <= 0) {
+            cout << "Frequencia cardiaca invalida. Tente novamente." << endl;
+            return;
         }
+        this->freqCardiaca = novaFreqCardiaca;
     }
 
-    double calcularCalorias() const {
-        const double caloriasPorPasso = 0.05;
-        return passos * caloriasPorPasso;
+    int getFreqCardiaca() const { return this->freqCardiaca; }
+
+    void setPassos(int novosPassos) {
+        if (novosPassos <= 0) {
+            cout << "Numero de passos invalido. Tente novamente." << endl;
+            return;
+        }
+        this->passos = novosPassos;
     }
 
+    int getPassos() const { return this->passos; }
+
+    void setCaloriasQueimadas() {
+        const float caloriasPorPasso = 0.05f;
+        this->caloriasQueimadas = passos * caloriasPorPasso;
+    }
+
+    float getCaloriasQueimadas() const { return this->caloriasQueimadas; }
+
+    bool setEmail(const string& novoEmail) {
+        if (novoEmail.find("@") == string::npos ||
+            novoEmail.find(".") == string::npos ||
+            novoEmail.find(" ") != string::npos ||
+            novoEmail.length() < 5) {
+            cout << "Email invalido. Tente novamente." << endl;
+            return false;
+        }
+        this->email = novoEmail;
+        return true;
+    }
+
+    string getEmail() const { return this->email; }
+
+    bool setSenha(const string& senha1, const string& senha2) { 
+        if (senha1 != senha2) {
+            cout << "Senhas nao conferem. Tente novamente." << endl;
+            return false;
+        }
+        if (senha1.length() < 8) {
+            cout << "Senha muito curta. A senha deve conter no minimo 8 caracteres." << endl;
+            return false;
+        }
+
+        this->senha = senha1;
+        return true;
+    }
+
+    string getSenha() const { return this->senha; }
 
     // Métodos pra exbibir dados
     void exibirDadosDoUsuario() {
         cout << "--- Perfil do Usuario ---\n";
-        cout << "Nome: " << nome << "\n";
-        cout << "Idade: " << idade << " anos\n";
-        cout << "Peso: " << peso << " kg\n";
-        cout << "Altura: " << altura << " metros\n";
+        cout << "Nome: " << this->getNome() << "\n";
+        cout << "Idade: " << this->getIdade() << " anos\n";
+        cout << "Peso: " << this->getPeso() << " kg\n";
+        cout << "Altura: " << this->getAltura() << " metros\n";
     }
 
     void exibirDadosDeSaude() const {
         cout << "--- Dados de Saude ---\n";
-        cout << "Passos: " << passos << "\n";
-        cout << "Frequencia Cardiaca: " << freqCardiaca << " bpm\n";
-        cout << "Calorias Queimadas: " << calcularCalorias() << " kcal\n";
+        cout << "Passos: " << this->getPassos() << "\n";
+        cout << "Frequencia Cardiaca: " << this->getFreqCardiaca() << " bpm\n";
+        cout << "Calorias Queimadas: " << this->getCaloriasQueimadas() << " kcal\n";
     }
+};
 
+class Sistema {
+private:
+    unordered_map<string, Usuario> usuarios;
 
-    // 1. Criar uma conta
-    void registrarUsuario(string nome, int idade, string email, string senha) {
+public:
+    void registrarUsuario(Usuario* usuario) {
+        string nome, email, senha1, senha2;
+        int idade = 22;
+        bool ret;   
+
         cout << "\n--- Registro de Usuario ---" << endl;
         cout << "Digite seu nome: ";
         getline(cin, nome); //usei getline aqui pra poder aceitar quebra de linha
+        usuario->setNome(nome);
+
         cout << "Digite sua idade: ";
         cin >> idade;
         cin.ignore();
+        ret = usuario->setIdade(idade);
+        if (!ret) {
+            return;
+        }
 
         cout << "Digite seu email: ";
         getline(cin, email);
+        ret = usuario->setEmail(email);
+        if (!ret) {
+            return;
+        }   
+
         cout << "Digite sua senha: ";
-        getline(cin, senha);
+        getline(cin, senha1);
 
-        this->nome = nome;
-        this->idade = idade;
-        this->email = email;
-        this->senha = senha;
+        cout << "Digite sua senha novamente: ";
+        getline(cin, senha2);
+        ret = usuario->setSenha(senha1, senha2);
+        if (!ret) {
+            return;
+        }
+
+        if (usuarios.count(email) > 0) {
+            cout << "Email ja cadastrado. Tente novamente." << endl;
+            return;
+        }
+        usuarios.emplace(email, *usuario);
         cout << "Usuario registrado com sucesso!" << endl;
-
     }
 
     // 2. Login
-    void login(string emailLogin, string senhaLogin) {
+    bool logarUsuario(string email, string senha) {
         cout << "\n--- Login ---" << endl;
-        bool loginValido = false;
-        while (!loginValido) {
+        cout << "Digite 0 para voltar ao menu anterior." << endl;
+        bool emailValido = false;
+        bool senhaValida = false;
+
+        do {
             cout << "Digite seu email: ";
-            getline(cin, emailLogin);
-            cout << "Digite sua senha: ";
-            getline(cin, senhaLogin);
+            getline(cin, email);
 
-            if (validarLogin(emailLogin, senhaLogin)) {
-                cout << "Login realizado com sucesso!" << endl;
-                loginValido = true;
-            } else {
-                cout << "Email ou senha incorretos. Tente novamente." << endl;
+            if (email == "0") {
+                return false;
             }
-        }
-    }
 
+            if (usuarios.count(email) == 0) {
+                cout << "Email nao cadastrado. Tente novamente." << endl;
+            } else {
+                emailValido = true;
+            }
+        } while (!emailValido && email != "0");
+        
+        do {
+            cout << "Digite sua senha: ";
+            getline(cin, senha);
+
+            if (senha == "0") {
+                return false;
+            }   
+
+            if (usuarios[email].getSenha() != senha) {
+                cout << "Senha incorreta. Tente novamente." << endl;
+            } else {
+                senhaValida = true;
+            }
+        } while (!senhaValida && senha != "0");
+
+        cout << "Login efetuado com sucesso!" << endl;
+        return true;
+    }
 };
 
-
-
-
-// Primeiro menu -> para criar conta ou logar
-void menu1() {
-    cout << "=== Fitflow ===\n";
-    cout << "1. Criar uma conta\n";
-    cout << "2. Login\n";
-    cout << "3. Sair\n";
-
-    cout << "=> ";
-}
-
 // Menu depois que é logado
-void menu2(string nome) {
-    cout << "\n--- Bem-vindo," << nome << "ao Fitflow! ---\nO que voce gostaria de fazer hoje? \n";
-    cout << "1. Registrar dados\n";
-    cout << "2. Exibir dados do usuario\n";
-    cout << "3. Exibir dados de saude\n";
-    cout << "4. Sair\n";
-    cout << "=> ";
+void menuLogado(Usuario* usuario) {
+    int opcao = 0;
+    while (opcao != 4) {
+        int freqCardiaca, passos;
+        float altura, peso;
+
+        cout << "\n--- Bem-vindo ao Fitflow, " << usuario->getNome() << "! ---\n";
+        cout << "O que voce gostaria de fazer hoje?\n\n";
+        cout << "1. Registrar dados\n";
+        cout << "2. Exibir dados do usuario\n";
+        cout << "3. Exibir dados de saude\n";
+        cout << "4. Sair\n";
+        cout << "=> ";
+        cin >> opcao;
+        cin.ignore();
+
+        switch (opcao) {
+        case 1: //chamar método que registre os dados de saúde
+            cout << "Digite seu peso (em kg): ";
+            cin >> peso;
+            usuario->setPeso(peso);
+            cout << "Peso atualizado para " << usuario->getPeso() << " kg." << endl;
+
+            cout << "Digite sua altura (em m): ";
+            cin >> altura;
+            usuario->setAltura(altura);
+            cout << "Altura atualizada para " << usuario->getAltura() << " metros." << endl;
+
+            cout << "Digite o numero de passos dados: ";
+            cin >> passos;
+            usuario->setPassos(passos);
+            cout << "Passos registrados. Total: " << usuario->getPassos() << " passos." << endl;
+
+            cout << "Digite sua frequencia cardiaca (em bpm): ";
+            cin >> freqCardiaca;
+            usuario->setFreqCardiaca(freqCardiaca);
+            cout << "Frequencia cardiaca atualizada para " << usuario->getFreqCardiaca() << " bpm." << endl;
+
+            usuario->setCaloriasQueimadas();
+
+            cout << "Dados atualizados com sucesso!" << endl;
+            break;
+        case 2: //chamar método que exiba os dados do usuario
+            usuario->exibirDadosDoUsuario();
+            break;
+        case 3: //chamar método que exiba os dados de saude
+            usuario->exibirDadosDeSaude();
+            break;
+        case 4:
+            cout << "Ate a proxima " << usuario->getNome() << "! Obrigado por usar o programa!\n\n";
+            break;
+        default:
+            cout << "Opcao invalida. Tente novamente." << endl;
+        }
+    }
 }
-
-
-
-
 
 int main() {
     Usuario usuario;
-    string nome, email, senha, emailLogin, senhaLogin;
-    int idade, opcao1, opcao2;
-    float altura, peso, caloriasQueimadas;
-    int freqCardiaca, passos;
+    Sistema sistema;
+    string nome, email, senha;
+    int opcao1;
+    bool menuAberto = true;
 
-    bool menu11 = true;
-    bool menu22 = false;
-
-    // menu1
+    // Menu Principal
     do {
-        menu1();
+        cout << "=== Fitflow ===\n";
+        cout << "1. Criar uma conta\n";
+        cout << "2. Login\n";
+        cout << "3. Sair\n";
+        cout << "=> ";
         cin >> opcao1;
         cin.ignore(); 
 
         switch (opcao1) {
         case 1:
-            usuario.registrarUsuario(nome, idade, email, senha); 
+            sistema.registrarUsuario(&usuario);
             break;
         case 2: 
-            usuario.login(emailLogin, senhaLogin);
-            nome = emailLogin;
-            menu22 = true;
-            menu11 = false;
+            if (!sistema.logarUsuario(email, senha)) {
+                break;
+            }
+            menuLogado(&usuario);
             break;
         case 3: 
-            cout << "Ate a proxima! Obrigado por usar o programa!" << endl;
+            cout << "Encerrando Fitflow... Obrigado por usar o programa!" << endl;
+            menuAberto = false;
             break;
 
         default:
             cout << "Opcao invalida. Tente novamente." << endl;
         }
-    } while (opcao1 != 3 && menu11==true);
-
-    
-    // menu2
-    do {
-        menu2(nome);
-        cin >> opcao2;
-        cin.ignore(); 
-
-        switch (opcao2) {
-        case 1: //chamar método que registre os dados de saúde
-            usuario.registrarPeso(peso);
-            usuario.registrarAltura(altura);
-            usuario.registrarPassos(passos);
-            usuario.atualizarFrequenciaCardiaca(freqCardiaca);
-            usuario.calcularCalorias();
-
-            cout << "Dados atualizados com sucesso!" << endl;
-            break;
-        case 2: //chamar método que exiba os dados do usuario
-            usuario.exibirDadosDoUsuario();
-            break;
-        case 3: //chamar método que exiba os dados de saude
-            usuario.exibirDadosDeSaude();
-            break;
-        case 4:
-            cout << "Ate a proxima" << nome << "! Obrigado por usar o programa!";
-            break;
-        default:
-            cout << "Opcao invalida. Tente novamente." << endl;
-        }
-    } while (opcao2 != 4);
+    } while (menuAberto);
 
     return 0;
-
 }
