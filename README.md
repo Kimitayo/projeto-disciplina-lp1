@@ -2,9 +2,9 @@
 ## Objetivo: Sitema de monitoramente de saúde em C++
 Um aplicativo que monitora e registra dados de saúde do usuário, como frequência cardíaca, passos e calorias queimadas.
 ### Menus:
-![Menu Inicial](image.png)
+![Menu Inicial](menu-inicial.png)
 
-![Menu Logado](image-1.png)
+![Menu Principal](menu-principal.png)
 
 ## Membros:
 - Clara Nascimento (@Kimitayo)
