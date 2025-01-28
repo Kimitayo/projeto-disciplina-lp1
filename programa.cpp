@@ -3,16 +3,24 @@
 #include <unordered_map>
 using namespace std;
 
+// 7 - Sistema de Monitoramente de Saúde
+// Aplicativo monitora e registra dados de saúde dos usuários
+
+// Grupo: Clara Nascimento;
+//        Artur Pinheiro;
+//        José Bernardo;
+//        Matheus Araújo
+
 class Usuario {
 private:
-    string nome;
     int idade;
-    float altura;
-    string email;
-    string senha;
-    float peso;
     int freqCardiaca;
     int passos;
+    string nome;
+    string email;
+    string senha;
+    float altura;
+    float peso;
     float caloriasQueimadas;
 
 public:
@@ -69,7 +77,7 @@ public:
             cout << "Numero de passos invalido. Tente novamente." << endl;
             return;
         }
-        this->passos = novosPassos;
+        this->passos = this->getPassos() + novosPassos;
     }
 
     int getPassos() const { return this->passos; }
@@ -125,6 +133,27 @@ public:
         cout << "Passos: " << this->getPassos() << "\n";
         cout << "Frequencia Cardiaca: " << this->getFreqCardiaca() << " bpm\n";
         cout << "Calorias Queimadas: " << this->getCaloriasQueimadas() << " kcal\n";
+
+        if (this->getAltura() == 0 || this->getPeso() == 0) {
+            cout << "IMC: Registre seus dados para ter acesso ao IMC.\n";
+            return;
+        }
+
+        int imc = this->getPeso() / (this->getAltura() * this->getAltura());
+        cout << "IMC: " << imc << " - ";
+        if (imc < 18.5) {
+            cout << "Abaixo do peso\n";
+        } else if (imc >= 18.5 && imc < 25) {
+            cout << "Peso normal\n";
+        } else if (imc >= 25 && imc < 30) {
+            cout << "Sobrepeso\n";
+        } else  if (imc >= 30 && imc < 35) {
+            cout << "Obesidade Grau 1\n";
+        } else if (imc >= 35 && imc < 40) {
+            cout << "Obesidade Grau 2 (severa)\n";
+        } else {
+            cout << "Obesidade Grau 3 (morbida)\n";
+        }
     }
 };
 
@@ -135,7 +164,7 @@ private:
 public:
     void registrarUsuario(Usuario* usuario) {
         string nome, email, senha1, senha2;
-        int idade = 22;
+        int idade;
         bool ret;   
 
         cout << "\n--- Registro de Usuario ---" << endl;
@@ -176,8 +205,34 @@ public:
         cout << "Usuario registrado com sucesso!" << endl;
     }
 
+    bool removerUsuario(Usuario* usuario) {
+        cout << "Voce tem certeza que deseja remover sua conta? (s/n): ";
+        char resposta;
+        cin >> resposta;
+        cin.ignore();
+
+        if (resposta != 's') {
+            cout << "Remocao de conta cancelada." << endl;
+            return false;
+        }
+
+        cout << "Confirme sua senha para continuar: ";
+        string senha;
+        getline(cin, senha);
+
+        if (senha != usuario->getSenha()) {
+            cout << "Senha incorreta. Remocao de conta cancelada." << endl;
+            return false;
+        }
+
+        usuarios.erase(usuario->getEmail());
+        cout << "Usuario removido com sucesso!" << endl;
+        return true;
+    }   
+
     // 2. Login
-    bool logarUsuario(string email, string senha) {
+    bool logarUsuario() {
+        string email, senha;
         cout << "\n--- Login ---" << endl;
         cout << "Digite 0 para voltar ao menu anterior." << endl;
         bool emailValido = false;
@@ -219,9 +274,10 @@ public:
 };
 
 // Menu depois que é logado
-void menuLogado(Usuario* usuario) {
+void menuLogado(Usuario* usuario, Sistema* sistema) {
     int opcao = 0;
-    while (opcao != 4) {
+    bool ret = false;
+    while (opcao != 5) {
         int freqCardiaca, passos;
         float altura, peso;
 
@@ -230,7 +286,8 @@ void menuLogado(Usuario* usuario) {
         cout << "1. Registrar dados\n";
         cout << "2. Exibir dados do usuario\n";
         cout << "3. Exibir dados de saude\n";
-        cout << "4. Sair\n";
+        cout << "4. Remover conta\n";
+        cout << "5. Sair\n";
         cout << "=> ";
         cin >> opcao;
         cin.ignore();
@@ -268,6 +325,12 @@ void menuLogado(Usuario* usuario) {
             usuario->exibirDadosDeSaude();
             break;
         case 4:
+            ret = sistema->removerUsuario(usuario);
+            if (ret) {
+                opcao = 5;
+            }
+            break;
+        case 5:
             cout << "Ate a proxima " << usuario->getNome() << "! Obrigado por usar o programa!\n\n";
             break;
         default:
@@ -279,8 +342,7 @@ void menuLogado(Usuario* usuario) {
 int main() {
     Usuario usuario;
     Sistema sistema;
-    string nome, email, senha;
-    int opcao1;
+    int opcao;
     bool menuAberto = true;
 
     // Menu Principal
@@ -290,18 +352,18 @@ int main() {
         cout << "2. Login\n";
         cout << "3. Sair\n";
         cout << "=> ";
-        cin >> opcao1;
+        cin >> opcao;
         cin.ignore(); 
 
-        switch (opcao1) {
+        switch (opcao) {
         case 1:
             sistema.registrarUsuario(&usuario);
             break;
         case 2: 
-            if (!sistema.logarUsuario(email, senha)) {
+            if (!sistema.logarUsuario()) {
                 break;
             }
-            menuLogado(&usuario);
+            menuLogado(&usuario, &sistema);
             break;
         case 3: 
             cout << "Encerrando Fitflow... Obrigado por usar o programa!" << endl;
